@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <bean id="userService" class="com.zpan.service.UserService" scope="prototype"/>
+    <bean id="htmlService" class="com.zpan.service.HTMLService" scope="prototype">
+        <property name="fileService" ref="fileService"/>
+    </bean>
+    <bean id="fileService" class="com.zpan.service.FileService" scope="prototype"/>
+
+    <bean id="loginAction" class="com.zpan.action.user.LoginAction" scope="prototype">
+        <property name="userService" ref="userService"/>
+    </bean>
+    <bean id="registerAction" class="com.zpan.action.user.RegisterAction" scope="prototype">
+        <property name="userService" ref="userService"/>
+    </bean>
+    <bean id="fileManagerAction" class="com.zpan.action.manager.FileManagerAction" scope="prototype">
+        <property name="fileService" ref="fileService"/>
+        <property name="htmlService" ref="htmlService"/>
+    </bean>
+    <bean id="profileAction" class="com.zpan.action.user.ProfileAction" scope="prototype">
+        <property name="userService" ref="userService"/>
+    </bean>
+    <bean id="fileDownloadAction" class="com.zpan.action.manager.FileDownloadAction">
+    </bean>
+    <bean id="multiFileDownloadAction" class="com.zpan.action.manager.MultiFileDownloadAction">
+    </bean>
+    <bean id="downloadManagerAction" class="com.zpan.action.manager.DownloadManagerAction">
+    </bean>
+    <bean id="fileUploadAction" class="com.zpan.action.manager.FileUploadAction">
+        <property name="fileService" ref="fileService"/>
+    </bean>
+    <bean id="loadHTMLAction" class="com.zpan.action.html.LoadHTMLAction">
+        <property name="fileService" ref="fileService"/>
+        <property name="htmlService" ref="htmlService"/>
+    </bean>
+    <bean id="myFileHTMLAction" class="com.zpan.action.html.MyFileHTMLAction">
+        <property name="fileService" ref="fileService"/>
+        <property name="htmlService" ref="htmlService"/>
+    </bean>
+    <bean id="myShareHTMLAction" class="com.zpan.action.html.MyShareHTMLAction">
+        <property name="fileService" ref="fileService"/>
+        <property name="htmlService" ref="htmlService"/>
+    </bean>
+    <bean id="sharingHTMLAction" class="com.zpan.action.html.SharingHTMLAction">
+        <property name="fileService" ref="fileService"/>
+        <property name="htmlService" ref="htmlService"/>
+    </bean>
+    <bean id="fileSearchAction" class="com.zpan.action.search.FileSearchAction">
+        <property name="fileService" ref="fileService"/>
+        <property name="htmlService" ref="htmlService"/>
+    </bean>
+
+    <!--1定义一个jdbc数据源，创建一个驱动管理数据源的bean -->
+    <bean id="jdbcDataSource"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/zpan"/>
+        <property name="username" value="root"/>
+        <property name="password" value="123456"/>
+    </bean>
+
+    <!--创建一个sql会话工厂bean，指定数据源 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- 1指定数据源 -->
+        <property name="dataSource" ref="jdbcDataSource"/>
+        <!-- 2类型别名包，默认引入com.zpan下的所有类 -->
+        <property name="typeAliasesPackage" value="com.zpan.vo"/>
+        <!-- 3指定sql映射xml文件的路径 -->
+        <property name="mapperLocations" value="classpath:mapper/*Mapper.xml">
+        </property>
+    </bean>
+
+    <!--自动扫描映射接口-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!-- 指定sql会话工厂，在上面配置过的 -->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <!-- 指定基础包，即自动扫描com.zhangguo.Spring61.mapping这个包以及它的子包下的所有映射接口类 -->
+        <property name="basePackage" value="com.zpan.dao"/>
+    </bean>
+
+</beans>

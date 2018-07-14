@@ -1,0 +1,10 @@
+.file_input {
+    position: absolute;
+    left: 370px;
+    top: 12px;
+    height: 24px;
+    width: 260px;
+    z-index: 1;
+    filter: alpha(opacity:0); /*透明*/
+    opacity: 0;
+}

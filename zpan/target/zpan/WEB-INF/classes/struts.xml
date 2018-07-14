@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+    <!-- 要注意Struts2默认文件上传最大为2M即便你设置了<param name="maximumSize">5242880</param>
+          当上传的文件大于2M时候也会出错的这时要设置，另外一个常量 -->
+    <constant name="struts.multipart.maxSize" value="1073741824"/>
+    <constant name="struts.enable.DynamicMethodInvocation" value="true"/>
+
+    <package name="zpan" namespace="/" extends="json-default">
+
+        <interceptors>
+            <!-- 配置自定义的拦截器-->
+            <interceptor name="permission" class="com.zpan.interceptor.PermissionInterceptor"/>
+            <!--配置一个拦截器栈,里面包含自己定义的拦截器和defaultStack默认拦截器-->
+            <interceptor-stack name="permissionStack">
+                <interceptor-ref name="defaultStack"/>
+                <interceptor-ref name="permission"/>
+            </interceptor-stack>
+        </interceptors>
+        <!--引用默认的拦截器(栈)-->
+        <default-interceptor-ref name="permissionStack"></default-interceptor-ref>
+        <!--配置一个全局结果集-->
+        <global-results>
+            <result name="login">/login.jsp</result>
+        </global-results>
+
+        <action name="fileUpload" class="fileUploadAction" method="fileUpload">
+            <!-- 指定（限制）上传文件的类型，定义局部拦截器，修改默认拦截器的属性
+             "fileUpload.maximumSize" ：限制上传最大的文件大小。
+             "fileUpload.allowedTypes"：允许上传文件的类型。
+             "fileUpload.allowedExtensions"：允许上传文件的可扩展文件类型。 -->
+            <interceptor-ref name="defaultStack">
+                <param name="fileUpload.maximumSize">1073741824</param>
+            </interceptor-ref>
+            <result type="json" name="success">
+                <param name="root">result</param>
+            </result>
+        </action>
+
+        <action name="login" class="loginAction" method="login">
+            <result type="redirectAction" name="success">fileManager.action</result>
+            <result name="error">/login.jsp</result>
+        </action>
+
+        <action name="logout" class="loginAction" method="logout">
+            <result name="success">/login.jsp</result>
+        </action>
+
+        <action name="register" class="registerAction" method="register">
+            <result name="success">/login.jsp</result>
+            <result name="error">/register.jsp</result>
+        </action>
+
+        <action name="loadHTML" class="loadHTMLAction" method="excute">
+            <result name="success">WEB-INF/file-manager.jsp</result>
+        </action>
+        <action name="myFileHTML" class="myFileHTMLAction" method="excute">
+            <result name="success" type="json">
+                <param name="root">result</param>
+            </result>
+        </action>
+        <action name="myShareHTML" class="myShareHTMLAction" method="excute">
+            <result name="success" type="json">
+                <param name="root">result</param>
+            </result>
+        </action>
+        <action name="sharingHTML" class="sharingHTMLAction" method="excute">
+            <result name="success" type="json">
+                <param name="root">result</param>
+            </result>
+        </action>
+
+        <action name="fileManager" class="fileManagerAction" method="excute">
+            <result name="success">WEB-INF/file-manager.jsp</result>
+            <result name="load" type="chain">
+                <param name="actionName">loadHTML</param>
+                <param name="pathType">${pathType}</param>
+            </result>
+
+            <result name="filePath" type="chain">
+                <param name="actionName">myFileHTML</param>
+                <param name="pathType">${pathType}</param>
+            </result>
+            <result name="mySharePath" type="chain">
+                <param name="actionName">myShareHTML</param>
+                <param name="pathType">${pathType}</param>
+            </result>
+            <result name="sharingPath" type="chain">
+                <param name="actionName">sharingHTML</param>
+                <param name="pathType">${pathType}</param>
+            </result>
+        </action>
+
+        <action name="renameFile" class="fileManagerAction" method="renameFile">
+            <result type="json" name="success">
+                <param name="root">result</param>
+            </result>
+        </action>
+        <action name="removeFile" class="fileManagerAction" method="removeFile">
+            <result type="json" name="success">
+            </result>
+        </action>
+        <action name="changePath" class="fileManagerAction" method="changePath">
+            <result type="json" name="success">
+            </result>
+        </action>
+        <action name="makeDir" class="fileManagerAction" method="makeDir">
+            <result type="json" name="success">
+                <param name="root">result</param>
+            </result>
+        </action>
+        <action name="removeSelectedFiles" class="fileManagerAction" method="removeSelectedFiles">
+            <result type="json" name="success">
+            </result>
+        </action>
+        <action name="backPrevoiousPage" class="fileManagerAction" method="backPrevoiousPage">
+            <result type="json" name="success">
+            </result>
+        </action>
+        <action name="moveSelectedFiles" class="fileManagerAction" method="moveSelectedFiles">
+            <result type="json" name="success">
+                <param name="root">result</param>
+            </result>
+        </action>
+        <action name="copySelectedFiles" class="fileManagerAction" method="copySelectedFiles">
+            <result type="json" name="success">
+                <param name="root">result</param>
+            </result>
+        </action>
+        <action name="shareFile" class="fileManagerAction" method="shareFile">
+            <result type="json" name="success">
+            </result>
+        </action>
+        <action name="fileSearch" class="fileSearchAction" method="excute">
+            <result type="json" name="success">
+                <param name="root">result</param>
+            </result>
+        </action>
+
+        <action name="download" class="fileDownloadAction" method="download">
+            <result name="success" type="stream">
+                <param name="inputName">inputStream</param>
+                <param name="contentDisposition">attachment;filename=${fileName}</param>
+            </result>
+        </action>
+        <action name="downloadMultiFile" class="multiFileDownloadAction" method="downloadMultiFile">
+            <result type="json" name="success">
+                <param name="root">result</param>
+            </result>
+        </action>
+        <action name="afterDownload" class="downloadManagerAction" method="afterDownload">
+            <result type="redirectAction" name="success">
+                <param name="actionName">removeFile</param>
+                <param name="fileName">${fileName}</param>
+            </result>
+        </action>
+
+        <action name="profile" class="profileAction" method="excute">
+            <result name="success">/WEB-INF/profile.jsp</result>
+            <result name="error">/login.jsp</result>
+        </action>
+        <action name="modifyAccountGeneral" class="profileAction" method="modifyAccountGeneral">
+            <result name="success">/WEB-INF/profile.jsp</result>
+            <result name="error">/WEB-INF/profile.jsp</result>
+        </action>
+        <action name="modifyAccountPassword" class="profileAction" method="modifyAccountPassword">
+            <result name="success">/WEB-INF/profile.jsp</result>
+            <result name="error">/WEB-INF/profile.jsp</result>
+        </action>
+    </package>
+</struts>

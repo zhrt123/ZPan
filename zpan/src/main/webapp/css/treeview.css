@@ -1,0 +1,34 @@
+#nestable2 .dd-handle {
+    background: #f6f6f6;
+    padding: .625rem 1.25rem;
+}
+
+#nestable2 button[data-action] {
+    margin-top: .625rem;
+}
+
+html:not([dir=rtl]) body:not([dir=rtl]) #nestable2 button[data-action] ~ .dd-handle {
+    padding-left: 2rem;
+}
+
+[dir=rtl] #nestable2 button[data-action] ~ .dd-handle {
+    padding-right: 2rem;
+}
+
+/* Custom drag handle */
+
+.dd-custom-drag-handle .dd-handle {
+    border: 0;
+    float: left;
+    margin: 1px;
+    font-size: .625rem;
+    line-height: 1.25rem;
+}
+
+.dd-custom-drag-handle .dd-handle > * {
+    vertical-align: middle;
+}
+
+[dir=rtl] .dd-custom-drag-handle .dd-handle {
+    float: right;
+}
